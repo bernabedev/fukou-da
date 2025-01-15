@@ -6,11 +6,10 @@ type Props = {
   className?: string;
   pages: number;
   page?: number;
-  onChange?: (page: number) => void;
 };
 
 export const Pagination = (props: Props) => {
-  const { className, pages, page = 1, onChange } = props;
+  const { className, pages, page = 1 } = props;
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
