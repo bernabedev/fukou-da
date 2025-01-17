@@ -1,18 +1,9 @@
+import GridAnime from "@/components/grid-anime";
 import InputSearch from "@/components/input-search";
 import { Pagination } from "@/components/pagination";
+import { AnimeObject } from "@/types/definitions";
 import { Metadata } from "next";
-type AnimeObject = {
-  id: string;
-  name: string;
-  url: string;
-  image: string;
-  posi: {
-    [key: string]: string;
-  };
-  size: string;
-  group: string;
-  codec: string;
-};
+
 type Props = {
   searchParams: Promise<{
     q: string;
@@ -22,7 +13,7 @@ type Props = {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Animes",
+  title: "Fukou - Da | Animes",
   description: "The best page to find animes",
 };
 
@@ -35,7 +26,6 @@ async function getAnimes({ q = "", page = 1 }: { q: string; page: number }) {
   );
 
   if (!res.ok) {
-    console.log({ res });
     throw new Error("Failed to fetch animes");
   }
 
@@ -52,42 +42,34 @@ export default async function Home(props: Props) {
   const { q = "", page: currentPage = 1 } = searchParams;
   const { data, total, totalPages } = await getAnimes({ q, page: currentPage });
   const resultsText = data.length > 1 ? "resultados" : "resultado";
-  console.log({ data, length: data.length });
   return (
-    <div>
-      <main className="max-w-7xl mx-auto">
-        <header className="my-4 flex justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Animes</h1>
-            <p className="text-gray-600">Total de animes: {total}</p>
-            {q ? (
-              <p>
-                {`Mostrando ${total} ${resultsText} para `}
-                <span className="font-bold">&quot;{q}&quot;</span>
-              </p>
-            ) : (
-              <p>{`Mostrando ${total} ${resultsText}`}</p>
-            )}
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="search">Buscar animes</label>
-            <InputSearch />
-          </div>
-        </header>
-        <ul className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {data.map((anime) => (
-            <li key={anime.id} className="[content-visible:auto]">
-              <a href={anime.url} target="_blank">
-                <img src={anime.image} alt={anime.name} />
-                <p className="text-xs mt-2">{anime.name}</p>
-              </a>
-            </li>
-          ))}
-        </ul>
-        <footer className="my-4 justify-center flex">
+    <main className="max-w-7xl mx-auto">
+      <header className="my-4 flex flex-col sm:flex-row justify-between">
+        <div>
+          <h1 className="text-2xl font-bold leading-4">Animes</h1>
+          {q ? (
+            <p className="text-gray-600">
+              {`Mostrando ${total} ${resultsText} para `}
+              <span className="font-bold">&quot;{q}&quot;</span>
+            </p>
+          ) : (
+            <p className="text-gray-600">{`Mostrando ${total} ${resultsText}`}</p>
+          )}
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="search">Buscar animes</label>
+          <InputSearch />
+        </div>
+      </header>
+      <GridAnime
+        data={data}
+        key={`total-${total}-q-${q}-page-${currentPage}`}
+      />
+      <footer className="my-4 justify-center flex">
+        {data.length > 0 && (
           <Pagination pages={totalPages} page={currentPage} />
-        </footer>
-      </main>
-    </div>
+        )}
+      </footer>
+    </main>
   );
 }
