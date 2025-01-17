@@ -1,5 +1,6 @@
 import InputSearch from "@/components/input-search";
 import { Pagination } from "@/components/pagination";
+import { Metadata } from "next";
 type AnimeObject = {
   id: string;
   name: string;
@@ -20,9 +21,14 @@ type Props = {
 };
 export const dynamic = "force-dynamic";
 
+export const metadata: Metadata = {
+  title: "Animes",
+  description: "The best page to find animes",
+};
+
 async function getAnimes({ q = "", page = 1 }: { q: string; page: number }) {
   const res = await fetch(
-    `http://localhost:3000/api/animes?limit=44&page=${page}&q=${q}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/animes?limit=44&page=${page}&q=${q}`,
     {
       cache: "no-store",
     }
